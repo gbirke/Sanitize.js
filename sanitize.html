@@ -1,0 +1,75 @@
+<html>
+<head>
+<title>Test pasting in contenteditable</title>
+<script type="text/javascript">
+
+function Sanitizer(){
+  var i;
+  this.options.elements = ['p', 'span'];
+  this.allowed_elements = {}
+  for(i=0;i<this.options.elements.length;i++) {
+    this.allowed_elements[this.options.elements[i]] = true;
+  }
+}
+
+Sanitizer.prototype.clean = function(elem) {
+  var fragment = document.createDocumentFragment();
+  var currentElement = fragment;
+  
+  function _clean(elem) {
+    var i, parentElement;
+    switch(elem.nodeType) {
+      // Element
+      case 1:
+        // check if element itself is allowed
+        parentElement = currentElement;
+        if(this.allowed_elements[elem.nodeName.toLowerCase()]) {
+          // clean attributes
+          //for(i=0;i<elem.attributes.length;i++)
+          currentElement = document.createElement(elem.NodeName);
+          parentElement.appendChild(currentElement);
+        }
+        // iterate over child nodes
+        for(i=0;i<elem.childNodes.length;i++) {
+          _clean(elem.childNodes[i]);
+        }
+        currentElement = parentElement;
+        break;
+      // Attribute
+      case 2:
+        // check if attribute name is in whitelist for this element
+        break;
+      // Text
+      case 3:
+        // TODO: replace unwanted text
+        var clone = elem.cloneNode();
+        currentElement.appendChild(clone);
+        break;
+      // Entity-Reference
+      case 5:
+        var clone = elem.cloneNode();
+        currentElement.appendChild(clone);
+        break;
+    }
+  }
+  
+  _clean(elem);
+  return fragment;
+  
+}
+
+
+
+
+
+</script>
+</head>
+<body>
+
+<div id="editarea" contenteditable="yes">
+<p>Some text</p>
+</div>
+
+</body>
+</html>
+
