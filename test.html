@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>QUnit Tests for Sanitizer_JS</title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="http://github.com/jquery/qunit/raw/master/qunit/qunit.css" type="text/css" media="screen">
+	<script type="text/javascript" src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>
+	<script type="text/javascript" src="sanitizer.js"></script>
+	<script type="text/javascript" src="test.js"></script>
+  <style type="text/css">
+  #fixtures, #resultHTML {
+    display:none;
+  }
+  </style>
+</head>
+<body>
+	<h1 id="qunit-header">QUnit Tests for Sanitizer_JS</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+<div id="resultHTML"></div>
+<div id="fixtures">
+  
+  <div id="paragraph">
+    <p>A Paragraph</p>
+  </div>
+  
+  <div id="smallexample">
+    <p>A Paragraph</p>
+    <p><a href="http://example.com/">A Link</a> and more <em>emphasized content</em></p>
+  </div>
+  
+  <div id="attributes">
+    <p id="exampleId" class="odd">A Paragraph</p>
+    <p class="even">Second Paragraph</p>
+  </div>
+  
+  <div id="entitiesAndComments">
+    Igor &amp; Sons, &Uuml;berwald <!-- Pratchett reference  -->
+  </div>
+  
+</div>
+</body>
+</html>
