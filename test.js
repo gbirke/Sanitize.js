@@ -31,7 +31,7 @@
   test('Whitelisted attributes are preserved, other attributes are removed', function() {
       var s = new Sanitizer({elements:['p'], attributes:{p:['class']}});
       var result = cleanup(s, 'attributes');
-      equal($('p[class]', result).length, 2, 'All paragraphs with attributes remain');
+      equal($('p[class]', result).length, 2, 'All class attributes of paragraphs remain');
       equal($('p[id]', result).length, 0, 'ID attribute is removed');
   });
   
@@ -41,8 +41,8 @@
       equal(result.contents().length, 1, 'Comment node is removed');
       var s = new Sanitizer({allow_comments:true});
       var result = cleanup(s, 'entitiesAndComments');
-      // Check for 3 nodes because there is a text node with lien break after the comment
-      equal(result.contents().length, 3, 'Comment node is preserved'); 
+      var comments = $.grep(result.contents(), function(elem){return elem.nodeType == 8});
+      equal(comments.length, 1, 'Comment node is preserved');
   });
 
 })(jQuery);

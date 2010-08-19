@@ -1,3 +1,6 @@
 Please note
   - Sanitizer_JS only cleans up markup! If you allow script tags or style attributes, you are responsible for sanitizing them!
   - If you are using Sanitizer_JS on the server side, you are responsible for HTML parsing. Sanitizer _JS expects a valid DOM tree.
+
+Known Limitations
+The style attribute is always dropped on Internet Explorer 5-7.

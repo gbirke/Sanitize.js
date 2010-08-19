@@ -20,33 +20,41 @@ function Sanitizer(){
 
 Sanitizer.prototype.clean = function(container) {
   var fragment = document.createDocumentFragment();
-  var currentElement = fragment;
+  var current_element = fragment;
   var sanitizer = this;
   
   function _clean(elem) {
 
-    var i, parentElement, name, attr;
+    var i, parentElement, name, attr, attr_name, attr_node;
     switch(elem.nodeType) {
       // Element
       case 1:
         
-        
         // check if element itself is allowed
-        parentElement = currentElement;
+        parentElement = current_element;
         name = elem.nodeName.toLowerCase();
         if(sanitizer.allowed_elements[name]) {
-            currentElement = document.createElement(elem.nodeName);
-            parentElement.appendChild(currentElement);
+            current_element = document.createElement(elem.nodeName);
+            parentElement.appendChild(current_element);
             
           // clean attributes
-          if(sanitizer.allowed_attributes[name]) {
-              for(i=0;i<elem.attributes.length;i++) {
-                  attr = elem.attributes[i];
-                  if(sanitizer.allowed_attributes[name][attr.nodeName]) {
-                      currentElement.setAttribute(attr.nodeName, attr.nodeValue)
-                  }
+          if(sanitizer.options.attributes[name]) {
+              var allowed_attributes = sanitizer.options.attributes[name];
+              for(i=0;i<allowed_attributes.length;i++) {
+                attr_name = allowed_attributes[i];
+                attr = elem.attributes[attr_name];
+                if(attr) {
+                    
+                    // TODO: Check protocol attributes for valid protocol
+                    
+                    attr_node = document.createAttribute('class');
+                    attr_node.value = attr.nodeValue
+                    current_element.setAttributeNode(attr_node);
+                }
               }
           }
+          
+          // TODO: Add attributes
         }
 
         // iterate over child nodes
@@ -54,10 +62,10 @@ Sanitizer.prototype.clean = function(container) {
           _clean(elem.childNodes[i]);
         }
         // some versions of IE don't support normalize.
-        if(currentElement.normalize) {
-          currentElement.normalize();
+        if(current_element.normalize) {
+          current_element.normalize();
         }
-        currentElement = parentElement;
+        current_element = parentElement;
         
         break;
       // Attribute
@@ -68,18 +76,18 @@ Sanitizer.prototype.clean = function(container) {
       case 3:
         // TODO: replace unwanted text
         var clone = elem.cloneNode(false);
-        currentElement.appendChild(clone);
+        current_element.appendChild(clone);
         break;
       // Entity-Reference (normally not used)
       case 5:
         var clone = elem.cloneNode(false);
-        currentElement.appendChild(clone);
+        current_element.appendChild(clone);
         break;
       // Comment
       case 8:
         if(sanitizer.options.allow_comments) {
           var clone = elem.cloneNode(false);
-          currentElement.appendChild(clone);
+          current_element.appendChild(clone);
         }
       default:
         //console.log("unknown node type", elem.nodeType) 
