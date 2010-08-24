@@ -6,6 +6,7 @@ function Sanitizer(){
   this.options.attributes = options.attributes ? options.attributes : {}
   this.options.allow_comments = options.allow_comments ? options.allow_comments : false;
   this.allowed_elements = {}
+  this.dom = options.dom ? options.dom : document;
   for(i=0;i<this.options.elements.length;i++) {
     this.allowed_elements[this.options.elements[i]] = true;
   }
@@ -19,9 +20,11 @@ function Sanitizer(){
 }
 
 Sanitizer.prototype.clean = function(container) {
-  var fragment = document.createDocumentFragment();
+  var dom = this.dom;
+  var fragment = dom.createDocumentFragment();
   var current_element = fragment;
   var sanitizer = this;
+
   
   function _clean(elem) {
 
@@ -34,7 +37,7 @@ Sanitizer.prototype.clean = function(container) {
         parentElement = current_element;
         name = elem.nodeName.toLowerCase();
         if(sanitizer.allowed_elements[name]) {
-            current_element = document.createElement(elem.nodeName);
+            current_element = dom.createElement(elem.nodeName);
             parentElement.appendChild(current_element);
             
           // clean attributes
