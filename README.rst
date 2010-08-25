@@ -6,8 +6,8 @@ Sanitizer_JS is a JavaScript port of the Ruby Sanitize (http://github.com/rgrove
 
 Please note
 -----------
-  - Sanitizer_JS only cleans up markup! If you allow script tags or style
-    attributes, you are responsible for sanitizing them!
+  - Sanitizer_JS only cleans up markup! If you allow script tags, style
+    or javascript attributes, you are responsible for sanitizing them!
   - If you are using Sanitizer_JS on the server side, you are responsible for
     HTML parsing. Sanitizer _JS expects a valid DOM tree. For creating new
     nodes you must either create the instance with ``option.dom`` and the
@@ -18,7 +18,11 @@ Please note
 Differences to Sanitize
 -----------------------
   - Transformers are not called from the inside out
-  - The clean method does not exist, the library always expects a parsed 
+  - The clean method does not exist, the library always expects a parsed DOM
+    document
+  - The node given as a parameter to ``clean_node`` is not changed. Instead, a
+    sanitized ``DocumentFragment`` is returned.
+
 
 Known Limitations
 -----------------

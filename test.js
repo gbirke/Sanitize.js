@@ -6,8 +6,8 @@
     function cleanup(sanitizer, fixtureName) {
       fixtureCount++;
       var clean = sanitizer.clean(document.getElementById(fixtureName));
-      var result = $('#resultHTML');
-      return result.empty().append(clean);
+      var result = $('<div id="result-'+fixtureCount+'"></div>').appendTo($('#resultHTML'));
+      return result.append(clean);
     }
     
   test('Default settings return only text nodes', function() {
@@ -43,6 +43,40 @@
       var result = cleanup(s, 'entitiesAndComments');
       var comments = $.grep(result.contents(), function(elem){return elem.nodeType == 8});
       equal(comments.length, 1, 'Comment node is preserved');
+  });
+
+  test('Attributes with protocols that are not allowed are removed', function() {
+      var options = {
+        elements:['a'],
+        attributes:{a:['href']},
+        protocols:{ 
+          a: { href: ['http'] }
+        }
+      }
+      var s = new Sanitizer(options);
+      var result = cleanup(s, 'protocolLinks');
+      equal($("a[href^='http://']", result).length, 1, 'HTTP protocol is preserved');
+      equal($("a[href^='chrome://']", result).length, 0, 'chrome protocol is removed');
+      equal($("a[href^='file://']", result).length, 0, 'file protocol is removed');
+      equal($("a[href^='../']", result).length, 0, 'relative path is removed');
+      equal($("a[href^='javascript']", result).length, 0, 'javascript is removed');
+  });
+  
+  test('Attributes with protocols that are allowed are preserved', function() {
+      var options = {
+        elements:['a'],
+        attributes:{a:['href']},
+        protocols:{ 
+          a: { href: ['http', 'file', Sanitizer.RELATIVE] }
+        }
+      }
+      var s = new Sanitizer(options);
+      var result = cleanup(s, 'protocolLinks');
+      equal($("a[href^='http://']", result).length, 1, 'HTTP protocol is preserved');
+      equal($("a[href^='chrome://']", result).length, 0, 'chrome protocol is removed');
+      equal($("a[href^='file://']", result).length, 1, 'file protocol is removed');
+      equal($("a[href^='../']", result).length, 1, 'relative path is removed');
+      equal($("a[href^='javascript']", result).length, 0, 'javascript is removed');
   });
 
 })(jQuery);

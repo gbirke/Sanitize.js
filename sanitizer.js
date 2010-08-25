@@ -6,6 +6,7 @@ function Sanitizer(){
   this.options.attributes = options.attributes ? options.attributes : {}
   this.options.allow_comments = options.allow_comments ? options.allow_comments : false;
   this.allowed_elements = {}
+  this.options.protocols = options.protocols ? options.protocols : {}
   this.dom = options.dom ? options.dom : document;
   for(i=0;i<this.options.elements.length;i++) {
     this.allowed_elements[this.options.elements[i]] = true;
@@ -19,19 +20,32 @@ function Sanitizer(){
   }
 }
 
+Sanitizer.REGEX_PROTOCOL = /^([A-Za-z0-9\+\-\.\&\;\#\s]*?)(?:\:|&#0*58|&#x0*3a)/i
+Sanitizer.RELATIVE = '__relative__'; // emulate Ruby symbol with a constant
+
 Sanitizer.prototype.clean = function(container) {
   var dom = this.dom;
   var fragment = dom.createDocumentFragment();
   var current_element = fragment;
   var sanitizer = this;
 
+  function _array_index(needle, haystack) {
+    var i;
+    for(i=0; i < haystack.length; i++) {
+      if(haystack[i] == needle) 
+        return i;
+    }
+    return -1;
+  }
   
   function _clean(elem) {
 
-    var i, parentElement, name, attr, attr_name, attr_node;
+    var i, j, parentElement, name, attr, attr_name, attr_node, protocols, del, attr_ok;
     switch(elem.nodeType) {
       // Element
       case 1:
+        
+        // TODO: call transformers
         
         // check if element itself is allowed
         parentElement = current_element;
@@ -47,12 +61,24 @@ Sanitizer.prototype.clean = function(container) {
                 attr_name = allowed_attributes[i];
                 attr = elem.attributes[attr_name];
                 if(attr) {
+                    attr_ok = true;
+                    // Check protocol attributes for valid protocol
+                    if(sanitizer.options.protocols[name] && sanitizer.options.protocols[name][attr_name]) {
+                      protocols = sanitizer.options.protocols[name][attr_name];
+                      del = attr.nodeValue.toLowerCase().match(/^([A-Za-z0-9\+\-\.\&\;\#\s]*?)(?:\:|&#0*58|&#x0*3a)/i)
+                      if(del) {
+                        attr_ok = (_array_index(del[1], protocols) != -1);
+                      }
+                      else {
+                        attr_ok = (_array_index(Sanitizer.RELATIVE, protocols) != -1);
+                      }
+                    }
                     
-                    // TODO: Check protocol attributes for valid protocol
-                    
-                    attr_node = document.createAttribute('class');
-                    attr_node.value = attr.nodeValue
-                    current_element.setAttributeNode(attr_node);
+                    if(attr_ok) {
+                      attr_node = document.createAttribute(attr_name);
+                      attr_node.value = attr.nodeValue
+                      current_element.setAttributeNode(attr_node);
+                    }
                 }
               }
           }
@@ -61,6 +87,7 @@ Sanitizer.prototype.clean = function(container) {
         }
 
         // iterate over child nodes
+        // TODO: check for remove_content
         for(i=0;i<elem.childNodes.length;i++) {
           _clean(elem.childNodes[i]);
         }
@@ -77,7 +104,6 @@ Sanitizer.prototype.clean = function(container) {
         break;
       // Text
       case 3:
-        // TODO: replace unwanted text
         var clone = elem.cloneNode(false);
         current_element.appendChild(clone);
         break;
