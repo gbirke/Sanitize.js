@@ -78,6 +78,19 @@
       equal($("a[href^='../']", result).length, 1, 'relative path is removed');
       equal($("a[href^='javascript']", result).length, 0, 'javascript is removed');
   });
+  
+  test('Attributes are added', function() {
+      var options = {
+        elements:['a'],
+        attributes:{a:['href']},
+        add_attributes:{ 
+          a: { rel: 'nofollow' }
+        }
+      }
+      var s = new Sanitizer(options);
+      var result = cleanup(s, 'protocolLinks');
+      equal($("a[rel]", result).length, 5, 'rel attribute is added');
+  });
 
 })(jQuery);
     
