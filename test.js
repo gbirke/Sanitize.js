@@ -35,6 +35,17 @@
       equal($('p[id]', result).length, 0, 'ID attribute is removed');
   });
   
+  test('Attributes can be preserved for all elements', function() {
+      var s = new Sanitizer({elements:['p', 'span'], attributes:{
+        '__ALL__':['class'],
+        p:['id']
+      }});
+      var result = cleanup(s, 'attributes');
+      equal($('p[class]', result).length, 2, 'All class attributes of paragraphs remain');
+      equal($('p[id]', result).length, 1, 'Allowed attribute arrays are merged');
+      equal($('span[class]', result).length, 1, 'Class attribute of span remains');
+  });
+  
   test('Comments can be preserved', function(){
       var s = new Sanitizer();
       var result = cleanup(s, 'entitiesAndComments');
@@ -91,6 +102,20 @@
       var result = cleanup(s, 'protocolLinks');
       equal($("a[rel]", result).length, 5, 'rel attribute is added');
   });
+  
+  test('Remove all content from allowed elements', function() {
+       var s = new Sanitizer({elements:['p', 'a', 'em'], remove_contents:true});
+       var result = cleanup(s, 'smallexample');
+       equal($("p", result).text(), '', 'Text content is removed');
+       equal($("a,em", result).length, 0, 'Child elements are removed');
+   });
+   
+   test('Remove content from specific allowed elements', function() {
+        var s = new Sanitizer({elements:['p', 'a', 'em'], remove_contents:['em', 'a']});
+        var result = cleanup(s, 'smallexample');
+        equal($("a", result).text(), '', 'Text content is removed from links');
+        equal($("em", result).text(), '', 'Text content is removed from emphasis');
+    });
 
 })(jQuery);
     
