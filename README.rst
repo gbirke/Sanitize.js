@@ -1,16 +1,19 @@
-Sanitizer_JS
+Sanitize.js
 ===============
 
+Sanitize.js is a whitelist-based HTML sanitizer. Given a list of acceptable elements and attributes, Sanitize will remove all unacceptable HTML from a DOM node.
 
-Sanitizer_JS is a JavaScript port of the Ruby Sanitize (http://github.com/rgrove/sanitize) library. It can be used on the server and on the client side for sanitizing user input.
+Sanitize.js heavily inspired by the Ruby Sanitize library (http://github.com/rgrove/sanitize). 
+
 
 Please note
 -----------
-  - Sanitizer_JS only cleans up markup! If you allow script tags, style
+  - Sanitize.js only cleans up markup! If you allow script tags, style
     or javascript attributes, you are responsible for sanitizing them!
-  - If you are using Sanitizer_JS on the server side, you are responsible for
-    HTML parsing. Sanitizer _JS expects a valid DOM tree. For creating new
-    nodes you must either create the instance with ``option.dom`` and the
+  - If you are using Sanitize.js on the server side, you are responsible for
+    HTML parsing and providing a DOM implementation. Sanitize.js expects a
+    valid DOM tree. For creating new nodes you must either create the instance 
+    with ``option.dom`` and the
     ``options.dom``  object must support DOM document actions. Or you use a
     library like EnvJS (http://www.envjs.com/) to make the ``document`` object
     available in the global scope.

@@ -1,10 +1,10 @@
-function Sanitizer(){
+function Sanitize(){
   var i, e, options;
   options = arguments[0] || {}
   this.config = {}
   this.config.elements = options.elements ? options.elements : [];
   this.config.attributes = options.attributes ? options.attributes : {};
-  this.config.attributes[Sanitizer.ALL] = this.config.attributes[Sanitizer.ALL] ? this.config.attributes[Sanitizer.ALL] : [];
+  this.config.attributes[Sanitize.ALL] = this.config.attributes[Sanitize.ALL] ? this.config.attributes[Sanitize.ALL] : [];
   this.config.allow_comments = options.allow_comments ? options.allow_comments : false;
   this.allowed_elements = {};
   this.config.protocols = options.protocols ? options.protocols : {};
@@ -29,10 +29,10 @@ function Sanitizer(){
   this.transformers = options.transformers ? options.transformers : [];
 }
 
-Sanitizer.REGEX_PROTOCOL = /^([A-Za-z0-9\+\-\.\&\;\#\s]*?)(?:\:|&#0*58|&#x0*3a)/i
-Sanitizer.RELATIVE = '__relative__'; // emulate Ruby symbol with string constant
+Sanitize.REGEX_PROTOCOL = /^([A-Za-z0-9\+\-\.\&\;\#\s]*?)(?:\:|&#0*58|&#x0*3a)/i
+Sanitize.RELATIVE = '__relative__'; // emulate Ruby symbol with string constant
 
-Sanitizer.prototype.clean = function(container) {
+Sanitize.prototype.clean_node = function(container) {
   var fragment = this.dom.createDocumentFragment();
   this.current_element = fragment;
   this.whitelist_nodes = [];
@@ -128,12 +128,12 @@ Sanitizer.prototype.clean = function(container) {
             // Check protocol attributes for valid protocol
             if(this.config.protocols[name] && this.config.protocols[name][attr_name]) {
               protocols = this.config.protocols[name][attr_name];
-              del = attr.nodeValue.toLowerCase().match(Sanitizer.REGEX_PROTOCOL);
+              del = attr.nodeValue.toLowerCase().match(Sanitize.REGEX_PROTOCOL);
               if(del) {
                 attr_ok = (_array_index(del[1], protocols) != -1);
               }
               else {
-                attr_ok = (_array_index(Sanitizer.RELATIVE, protocols) != -1);
+                attr_ok = (_array_index(Sanitize.RELATIVE, protocols) != -1);
               }
             }
             if(attr_ok) {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>QUnit Tests for Sanitizer_JS</title>
+	<title>QUnit Tests for Sanitize.js</title>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
 	<link rel="stylesheet" href="http://github.com/jquery/qunit/raw/master/qunit/qunit.css" type="text/css" media="screen">
 	<script type="text/javascript" src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>
@@ -14,40 +14,43 @@
   </style>
 </head>
 <body>
-	<h1 id="qunit-header">QUnit Tests for Sanitizer_JS</h1>
+    <!-- QUnit placeholder elements -->
+	<h1 id="qunit-header">QUnit Tests for Sanitize.js</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>
 	<h2 id="qunit-userAgent"></h2>
 	<ol id="qunit-tests"></ol>
-<div id="resultHTML"></div>
-<div id="fixtures">
+
+    <!-- Container for sanitized elements -->
+    <div id="resultHTML"></div>
+
+    <!-- These fixture will be used as input for the various tests -->
+    <div id="fixtures">
+      <div id="paragraph">
+        <p>A Paragraph</p>
+      </div>
   
-  <div id="paragraph">
-    <p>A Paragraph</p>
-  </div>
+      <div id="smallexample">
+        <p>A Paragraph</p>
+        <p><a href="http://example.com/">A Link</a> and more <em>emphasized content</em></p>
+      </div>
   
-  <div id="smallexample">
-    <p>A Paragraph</p>
-    <p><a href="http://example.com/">A Link</a> and more <em>emphasized content</em></p>
-  </div>
+      <div id="attributes">
+        <p id="exampleId" class="odd">A Paragraph</p>
+        <p class="even">Second Paragraph <span class="inline">with some special markup</span></p>
+      </div>
   
-  <div id="attributes">
-    <p id="exampleId" class="odd">A Paragraph</p>
-    <p class="even">Second Paragraph <span class="inline">with some special markup</span></p>
-  </div>
+      <div id="entitiesAndComments">
+        Igor &amp; Sons, &Uuml;berwald <!-- Pratchett reference  -->
+      </div>
   
-  <div id="entitiesAndComments">
-    Igor &amp; Sons, &Uuml;berwald <!-- Pratchett reference  -->
-  </div>
-  
-  <div id="protocolLinks">
-      <a href="chrome://browser.xul">browser.xul</a>
-      <a href="http://www.example.com">www.example.com</a>
-      <a href="file:///etc/passwd">/etc/passwd</a>
-      <a href="../another_file.htm">relative link</a>
-      <a href="javascript:alert('Got you!');">Javascript alert</a>
-  </div>
-  
-</div>
+      <div id="protocolLinks">
+          <a href="chrome://browser.xul">browser.xul</a>
+          <a href="http://www.example.com">www.example.com</a>
+          <a href="file:///etc/passwd">/etc/passwd</a>
+          <a href="../another_file.htm">relative link</a>
+          <a href="javascript:alert('Got you!');">Javascript alert</a>
+      </div>  
+    </div>
 </body>
 </html>

@@ -3,15 +3,15 @@
   
   var fixtureCount=0;
   
-    function cleanup(sanitizer, fixtureName) {
+    function cleanup(Sanitize, fixtureName) {
       fixtureCount++;
-      var clean = sanitizer.clean(document.getElementById(fixtureName));
+      var clean = Sanitize.clean_node(document.getElementById(fixtureName));
       var result = $('<div id="result-'+fixtureCount+'"></div>').appendTo($('#resultHTML'));
       return result.append(clean);
     }
     
   test('Default settings return only text nodes', function() {
-      var s = new Sanitizer();
+      var s = new Sanitize();
       var result = cleanup(s, 'paragraph');
       
       equal($('p', result).length, 0, 'All paragraphs are removed');
@@ -21,7 +21,7 @@
   });
 
   test('Whitelisted elements remain, other elements are removed', function() {
-      var s = new Sanitizer({elements:['p']});
+      var s = new Sanitize({elements:['p']});
       var result = cleanup(s, 'smallexample');
       equal($('p', result).length, 2, 'All paragraphs remain');
       equal($('em', result).length, 0, 'Emphasis removed');
@@ -29,14 +29,14 @@
   });
   
   test('Whitelisted attributes are preserved, other attributes are removed', function() {
-      var s = new Sanitizer({elements:['p'], attributes:{p:['class']}});
+      var s = new Sanitize({elements:['p'], attributes:{p:['class']}});
       var result = cleanup(s, 'attributes');
       equal($('p[class]', result).length, 2, 'All class attributes of paragraphs remain');
       equal($('p[id]', result).length, 0, 'ID attribute is removed');
   });
   
   test('Attributes can be preserved for all elements', function() {
-      var s = new Sanitizer({elements:['p', 'span'], attributes:{
+      var s = new Sanitize({elements:['p', 'span'], attributes:{
         '__ALL__':['class'],
         p:['id']
       }});
@@ -47,10 +47,10 @@
   });
   
   test('Comments can be preserved', function(){
-      var s = new Sanitizer();
+      var s = new Sanitize();
       var result = cleanup(s, 'entitiesAndComments');
       equal(result.contents().length, 1, 'Comment node is removed');
-      var s = new Sanitizer({allow_comments:true});
+      var s = new Sanitize({allow_comments:true});
       var result = cleanup(s, 'entitiesAndComments');
       var comments = $.grep(result.contents(), function(elem){return elem.nodeType == 8});
       equal(comments.length, 1, 'Comment node is preserved');
@@ -64,7 +64,7 @@
           a: { href: ['http'] }
         }
       }
-      var s = new Sanitizer(options);
+      var s = new Sanitize(options);
       var result = cleanup(s, 'protocolLinks');
       var hrefcount = $.support.hrefNormalized ? 1 : 2; // IE turns relative paths to attributes
       equal($("a[href^='http://']", result).length, hrefcount , 'HTTP protocol is preserved');
@@ -79,10 +79,10 @@
         elements:['a'],
         attributes:{a:['href']},
         protocols:{ 
-          a: { href: ['http', 'file', Sanitizer.RELATIVE] }
+          a: { href: ['http', 'file', Sanitize.RELATIVE] }
         }
       }
-      var s = new Sanitizer(options);
+      var s = new Sanitize(options);
       var result = cleanup(s, 'protocolLinks');
       var hrefcount = $.support.hrefNormalized ? 1 : 2; // IE turns relative paths to attributes
       var relcount = $.support.hrefNormalized ? 1 : 0; 
@@ -101,27 +101,27 @@
           a: { rel: 'nofollow' }
         }
       }
-      var s = new Sanitizer(options);
+      var s = new Sanitize(options);
       var result = cleanup(s, 'protocolLinks');
       equal($("a[rel]", result).length, 5, 'rel attribute is added');
   });
   
   test('Remove all content from allowed elements', function() {
-       var s = new Sanitizer({elements:['p', 'a', 'em'], remove_contents:true});
+       var s = new Sanitize({elements:['p', 'a', 'em'], remove_contents:true});
        var result = cleanup(s, 'smallexample');
        equal($("p", result).text(), '', 'Text content is removed');
        equal($("a,em", result).length, 0, 'Child elements are removed');
   });
    
   test('Remove content from specific allowed elements', function() {
-        var s = new Sanitizer({elements:['p', 'a', 'em'], remove_contents:['em', 'a']});
+        var s = new Sanitize({elements:['p', 'a', 'em'], remove_contents:['em', 'a']});
         var result = cleanup(s, 'smallexample');
         equal($("a", result).text(), '', 'Text content is removed from links');
         equal($("em", result).text(), '', 'Text content is removed from emphasis');
   });
     
   test('Transformers can whitelist current node', function() {
-          var s = new Sanitizer({transformers:[function(input){
+          var s = new Sanitize({transformers:[function(input){
             if(input.node_name == 'p') 
               return {whitelist: true}
           }]});
@@ -131,7 +131,7 @@
   });
   
   test('Transformers can whitelist nodes', function() {
-          var s = new Sanitizer({transformers:[function(input){
+          var s = new Sanitize({transformers:[function(input){
               return {whitelist_nodes: ['p', 'em']}
           }]});
           var result = cleanup(s, 'smallexample');
@@ -141,7 +141,7 @@
   });
   
   test('Transformers can whitelist attributes of current node', function() {
-          var s = new Sanitizer({elements:['p'], transformers:[function(input){
+          var s = new Sanitize({elements:['p'], transformers:[function(input){
             if(input.node_name == 'p' && input.node.attributes['id'] && 
               input.node.attributes['id'].nodeValue == 'exampleId') 
               return {attr_whitelist: ['class']}
@@ -154,7 +154,7 @@
   });
   
   test('Whitelisted attributes of multiple transformers are cumulative', function() {
-          var s = new Sanitizer({
+          var s = new Sanitize({
             elements:['p', 'span'], 
             transformers:[
               function(input){
@@ -171,7 +171,7 @@
   });
   
   test('Transformers can replace nodes', function() {
-          var s = new Sanitizer({
+          var s = new Sanitize({
             elements:['div', 'p'],
             transformers:[function(input){
               if(input.node_name == 'p')
