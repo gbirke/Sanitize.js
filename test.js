@@ -108,14 +108,23 @@
        var result = cleanup(s, 'smallexample');
        equal($("p", result).text(), '', 'Text content is removed');
        equal($("a,em", result).length, 0, 'Child elements are removed');
-   });
+  });
    
-   test('Remove content from specific allowed elements', function() {
+  test('Remove content from specific allowed elements', function() {
         var s = new Sanitizer({elements:['p', 'a', 'em'], remove_contents:['em', 'a']});
         var result = cleanup(s, 'smallexample');
         equal($("a", result).text(), '', 'Text content is removed from links');
         equal($("em", result).text(), '', 'Text content is removed from emphasis');
-    });
+  });
+    
+  test('Transformers can whitelist nodes', function() {
+          var s = new Sanitizer({transformers:[function(input){
+            if(input.node_name == 'p') 
+              return {whitelist: true}
+          }]});
+          var result = cleanup(s, 'smallexample');
+          equal($("p", result).length, 2, 'Paragraphs whitelisted');
+  });
 
 })(jQuery);
     
