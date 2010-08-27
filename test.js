@@ -66,7 +66,8 @@
       }
       var s = new Sanitizer(options);
       var result = cleanup(s, 'protocolLinks');
-      equal($("a[href^='http://']", result).length, 1, 'HTTP protocol is preserved');
+      var hrefcount = $.support.hrefNormalized ? 1 : 2; // IE turns relative paths to attributes
+      equal($("a[href^='http://']", result).length, hrefcount , 'HTTP protocol is preserved');
       equal($("a[href^='chrome://']", result).length, 0, 'chrome protocol is removed');
       equal($("a[href^='file://']", result).length, 0, 'file protocol is removed');
       equal($("a[href^='../']", result).length, 0, 'relative path is removed');
@@ -83,10 +84,12 @@
       }
       var s = new Sanitizer(options);
       var result = cleanup(s, 'protocolLinks');
-      equal($("a[href^='http://']", result).length, 1, 'HTTP protocol is preserved');
+      var hrefcount = $.support.hrefNormalized ? 1 : 2; // IE turns relative paths to attributes
+      var relcount = $.support.hrefNormalized ? 1 : 0; 
+      equal($("a[href^='http://']", result).length, hrefcount, 'HTTP protocol is preserved');
       equal($("a[href^='chrome://']", result).length, 0, 'chrome protocol is removed');
-      equal($("a[href^='file://']", result).length, 1, 'file protocol is removed');
-      equal($("a[href^='../']", result).length, 1, 'relative path is removed');
+      equal($("a[href^='file://']", result).length, 1, 'file protocol is preserved');
+      equal($("a[href^='../']", result).length, relcount, 'relative path is preserved');
       equal($("a[href^='javascript']", result).length, 0, 'javascript is removed');
   });
   
