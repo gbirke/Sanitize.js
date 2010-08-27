@@ -105,6 +105,7 @@ Sanitizer.prototype.clean = function(container) {
     var i, j, clone, parentElement, name, allowed_attributes, attr, attr_name, attr_node, protocols, del, attr_ok;
     var transform = _transform_element.call(this, elem);
     
+    elem = transform.node;
     name = elem.nodeName.toLowerCase();
     
     // check if element itself is allowed
@@ -190,7 +191,8 @@ Sanitizer.prototype.clean = function(container) {
         config: this.config,
         node: node,
         node_name: node.nodeName.toLowerCase(),
-        whitelist_nodes: this.whitelist_nodes
+        whitelist_nodes: this.whitelist_nodes,
+        dom: this.dom
       });
       if(transform == null) 
         continue;
@@ -202,6 +204,7 @@ Sanitizer.prototype.clean = function(container) {
         if(transform.attr_whitelist) {
           output.attr_whitelist = _merge_arrays_uniq(output.attr_whitelist, transform.attr_whitelist);
         }
+        output.node = transform.node ? transform.node : output.node;
       }
       else {
         throw new Error("transformer output must be an object or null");

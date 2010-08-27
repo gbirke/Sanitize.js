@@ -169,6 +169,18 @@
           equal($("*[class]", result).length, 3, 'class attributes whitelisted');
           equal($("*[id]", result).length, 1, 'id attributes are whitelisted');
   });
+  
+  test('Transformers can replace nodes', function() {
+          var s = new Sanitizer({
+            elements:['div', 'p'],
+            transformers:[function(input){
+              if(input.node_name == 'p')
+              return { node: input.dom.createElement('div')}
+          }]});
+          var result = cleanup(s, 'smallexample');
+          equal($("p", result).length, 0, 'Paragraphs are removed');
+          equal($("div", result).length, 2, 'Paragraphs are replaced by DIVs, which are preserved');
+  });
 
 })(jQuery);
     
