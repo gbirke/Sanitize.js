@@ -33,8 +33,6 @@ Sanitizer.REGEX_PROTOCOL = /^([A-Za-z0-9\+\-\.\&\;\#\s]*?)(?:\:|&#0*58|&#x0*3a)/
 Sanitizer.RELATIVE = '__relative__'; // emulate Ruby symbol with string constant
 
 Sanitizer.prototype.clean = function(container) {
-  // TODO: change call binding so I can use "this" again in _clean, instead of cloning these variables here
-  //var allowed_elements = this.allowed_elements;
   var fragment = this.dom.createDocumentFragment();
   this.current_element = fragment;
   this.whitelist_nodes = [];
@@ -120,7 +118,7 @@ Sanitizer.prototype.clean = function(container) {
     
     // check if element itself is allowed
     parentElement = this.current_element;
-    if(this.allowed_elements[name]) {
+    if(this.allowed_elements[name] || transform.whitelist) {
         this.current_element = this.dom.createElement(elem.nodeName);
         parentElement.appendChild(this.current_element);
         
@@ -194,11 +192,14 @@ Sanitizer.prototype.clean = function(container) {
       });
       if(transform == null) 
         continue;
-      else if(typeof transform == 'Object') {
+      else if(typeof transform == 'object') {
         if(transform.whitelist_nodes && transform.whitelist_nodes instanceof Array) {
           this.whitelist_nodes = _merge_arrays_uniq(this.whitelist_nodes, transform.whitelist_nodes);
         }
         output.whitelist = transform.whitelist ? true : false;
+      }
+      else {
+        throw new Error("transformer output must be an object or null");
       }
     }
     return output;
