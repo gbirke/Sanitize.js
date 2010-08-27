@@ -107,15 +107,6 @@ Sanitizer.prototype.clean = function(container) {
     
     name = elem.nodeName.toLowerCase();
     
-    // If this node is in the dynamic whitelist array (built at runtime by
-    // transformers), let it live with all of its attributes intact.
-    if(_array_index(name, this.whitelist_nodes) != -1) {
-      clone = elem.cloneNode(true);
-      // TODO: remove child elements
-      this.current_element.appendChild(clone);
-      return;
-    }
-    
     // check if element itself is allowed
     parentElement = this.current_element;
     if(this.allowed_elements[name] || transform.whitelist) {
@@ -125,7 +116,8 @@ Sanitizer.prototype.clean = function(container) {
       // clean attributes
       allowed_attributes = _merge_arrays_uniq(
         this.config.attributes[name],
-        this.config.attributes['__ALL__']
+        this.config.attributes['__ALL__'],
+        transform.attr_whitelist
       );
       for(i=0;i<allowed_attributes.length;i++) {
         attr_name = allowed_attributes[i];
@@ -160,6 +152,16 @@ Sanitizer.prototype.clean = function(container) {
         }
       }
     } // End checking if element is allowed
+    // If this node is in the dynamic whitelist array (built at runtime by
+    // transformers), let it live with all of its attributes intact.
+    else if(_array_index(name, this.whitelist_nodes) != -1) {
+      this.current_element = elem.cloneNode(true);
+      // Remove child nodes, they will be sanitiazied and added by other code
+      while(this.current_element.childNodes.length > 0) {
+        this.current_element.removeChild(this.current_element.firstChild);
+      }
+      parentElement.appendChild(this.current_element);
+    }
 
     // iterate over child nodes
     if(!this.config.remove_all_contents && !this.config.remove_element_contents[name]) {
@@ -197,6 +199,9 @@ Sanitizer.prototype.clean = function(container) {
           this.whitelist_nodes = _merge_arrays_uniq(this.whitelist_nodes, transform.whitelist_nodes);
         }
         output.whitelist = transform.whitelist ? true : false;
+        if(transform.attr_whitelist) {
+          output.attr_whitelist = _merge_arrays_uniq(output.attr_whitelist, transform.attr_whitelist);
+        }
       }
       else {
         throw new Error("transformer output must be an object or null");

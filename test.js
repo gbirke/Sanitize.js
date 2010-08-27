@@ -117,13 +117,54 @@
         equal($("em", result).text(), '', 'Text content is removed from emphasis');
   });
     
-  test('Transformers can whitelist nodes', function() {
+  test('Transformers can whitelist current node', function() {
           var s = new Sanitizer({transformers:[function(input){
             if(input.node_name == 'p') 
               return {whitelist: true}
           }]});
           var result = cleanup(s, 'smallexample');
           equal($("p", result).length, 2, 'Paragraphs whitelisted');
+          equal($("a,em", result).length, 0, 'Child elements are removed');
+  });
+  
+  test('Transformers can whitelist nodes', function() {
+          var s = new Sanitizer({transformers:[function(input){
+              return {whitelist_nodes: ['p', 'em']}
+          }]});
+          var result = cleanup(s, 'smallexample');
+          equal($("p", result).length, 2, 'Paragraphs whitelisted');
+          equal($("em", result).length, 1, 'Emphasis whitelisted');
+          equal($("a", result).length, 0, 'Link not whitelisted');
+  });
+  
+  test('Transformers can whitelist attributes of current node', function() {
+          var s = new Sanitizer({elements:['p'], transformers:[function(input){
+            if(input.node_name == 'p' && input.node.attributes['id'] && 
+              input.node.attributes['id'].nodeValue == 'exampleId') 
+              return {attr_whitelist: ['class']}
+          }]});
+          var result = cleanup(s, 'attributes');
+          equal($("p", result).length, 2, 'Paragraphs whitelisted');
+          equal($("p[class='odd']", result).length, 1, 'class of paragraph with exampleId was whitelisted');
+          equal($("p[class='even']", result).length, 0, 'class of paragraph without id was removed');
+          
+  });
+  
+  test('Whitelisted attributes of multiple transformers are cumulative', function() {
+          var s = new Sanitizer({
+            elements:['p', 'span'], 
+            transformers:[
+              function(input){
+                return {attr_whitelist: ['class']}
+              },
+              function(input){
+                return {attr_whitelist: ['id']}
+              }
+            ]
+          });
+          var result = cleanup(s, 'attributes');
+          equal($("*[class]", result).length, 3, 'class attributes whitelisted');
+          equal($("*[id]", result).length, 1, 'id attributes are whitelisted');
   });
 
 })(jQuery);
