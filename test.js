@@ -105,6 +105,8 @@
       equal($("a[rel]", result).length, 5, 'rel attribute is added');
   });
   
+  // TODO: Test if added attributes overwrite existing attributes
+  
   test('Remove all content from allowed elements', function() {
        var s = new Sanitize({elements:['p', 'a', 'em'], remove_contents:true});
        var result = cleanup(s, 'smallexample');

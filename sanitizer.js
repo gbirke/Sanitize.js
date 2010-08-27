@@ -155,6 +155,7 @@ Sanitize.prototype.clean_node = function(container) {
     } // End checking if element is allowed
     // If this node is in the dynamic whitelist array (built at runtime by
     // transformers), let it live with all of its attributes intact.
+    // TODO: Use node instead of node name for better Sanitize compatibility
     else if(_array_index(name, this.whitelist_nodes) != -1) {
       this.current_element = elem.cloneNode(true);
       // Remove child nodes, they will be sanitiazied and added by other code
