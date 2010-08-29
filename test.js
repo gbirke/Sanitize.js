@@ -133,7 +133,8 @@
   
   test('Transformers can whitelist nodes', function() {
           var s = new Sanitize({transformers:[function(input){
-              return {whitelist_nodes: ['p', 'em']}
+              if(input.node_name == 'p' || input.node_name == 'em')
+                return {whitelist_nodes: [input.node]}
           }]});
           var result = cleanup(s, 'smallexample');
           equal($("p", result).length, 2, 'Paragraphs whitelisted');

@@ -155,8 +155,7 @@ Sanitize.prototype.clean_node = function(container) {
     } // End checking if element is allowed
     // If this node is in the dynamic whitelist array (built at runtime by
     // transformers), let it live with all of its attributes intact.
-    // TODO: Use node instead of node name for better Sanitize compatibility
-    else if(_array_index(name, this.whitelist_nodes) != -1) {
+    else if(_array_index(elem, this.whitelist_nodes) != -1) {
       this.current_element = elem.cloneNode(true);
       // Remove child nodes, they will be sanitiazied and added by other code
       while(this.current_element.childNodes.length > 0) {
@@ -185,7 +184,7 @@ Sanitize.prototype.clean_node = function(container) {
       node: node,
       whitelist: false
     }
-    var i, transform;
+    var i, j, transform;
     for(i=0;i<this.transformers.length;i++) {
       transform = this.transformers[i]({
         allowed_elements: this.allowed_elements,
@@ -199,7 +198,11 @@ Sanitize.prototype.clean_node = function(container) {
         continue;
       else if(typeof transform == 'object') {
         if(transform.whitelist_nodes && transform.whitelist_nodes instanceof Array) {
-          this.whitelist_nodes = _merge_arrays_uniq(this.whitelist_nodes, transform.whitelist_nodes);
+          for(j=0;j<transform.whitelist_nodes.length;j++) {
+            if(_array_index(transform.whitelist_nodes[j], this.whitelist_nodes) == -1) {
+              this.whitelist_nodes.push(transform.whitelist_nodes[j]);
+            }
+          }
         }
         output.whitelist = transform.whitelist ? true : false;
         if(transform.attr_whitelist) {
