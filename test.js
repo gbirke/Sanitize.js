@@ -105,7 +105,18 @@
       equal($("a[rel]", result).length, 5, 'rel attribute is added');
   });
   
-  // TODO: Test if added attributes overwrite existing attributes
+  test('Added Attributes are overwritten even when original attributes are preserved', function() {
+      var options = {
+        elements:['p'],
+        attributes:{p:['class']},
+        add_attributes:{ 
+          p: { class: 'yellow' }
+        }
+      }
+      var s = new Sanitize(options);
+      var result = cleanup(s, 'attributes');
+      equal($("p[class='yellow']", result).length, 2, 'class attribute is rewritten');
+  });
   
   test('Remove all content from allowed elements', function() {
        var s = new Sanitize({elements:['p', 'a', 'em'], remove_contents:true});
