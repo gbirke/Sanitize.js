@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Test pasting in contenteditable</title>
+<script type="text/javascript" src="../lib/sanitize.js"></script>
+<script type="text/javascript">
+
+function do_sanitize() {
+    var elm = document.getElementById('editarea');
+    var s = new Sanitize();
+    var cleanedHtml = s.clean_node(elm);
+    var cleanContainer = document.getElementById('cleaned');
+    while(cleanContainer.childNodes.length > 0) {
+        cleanContainer.removeChild(cleanContainer.firstChild);
+    }
+    cleanContainer.appendChild(cleanedHtml);
+    document.forms['srcfrm'].elements['source'].value = cleanContainer.innerHTML;
+}
+
+window.onload = function() {
+    document.getElementById('editarea').onpaste = function() {
+        window.setTimeout(do_sanitize, 5);
+        // todo: set selection cursor
+    };
+}
+
+</script>
+<style type="text/css">
+    #editarea {
+        border:inset 1px #000;
+        padding:0 15px;
+    }
+    
+    .resultcontainer {
+        float:left;
+        width:48%;
+        margin:0;
+        padding:0;
+    }
+    
+    #cleaned {
+        border:solid 1px grey;
+    }
+    
+</style>
+</head>
+<body>
+    <p>Sanitizing HTML Area. Please paste some rich text:
+<div id="editarea" contenteditable="true">
+<p>Some text</p>
+<ul><li>List Item</li></ul>
+<p><span class="foo">Inner Text.</span> Outer text. <a href="http://example.com/">Link</a></p>
+</div>
+<form name="srcfrm" method="post" action="#">
+    <p><input type="button" onclick="do_sanitize();" value="Sanitize"></p>
+    <div class="resultcontainer">
+        <p>HTML result</p>
+        <div id="cleaned"></div>
+    </div>
+    <div class="resultcontainer">
+        <p>Result source:</p>
+        <textarea name="source" rows="30" cols="80"></textarea>
+    </div>
+</form>
+</body>
+</html>
