@@ -11,22 +11,27 @@
 function do_sanitize() {
     var elm = document.getElementById('editarea');
     var srcfrm = document.forms['srcfrm'];
+    // Get Config from dowpdown
     var cfg_name = srcfrm.elements['sanitize_config'].options[srcfrm.elements['sanitize_config'].selectedIndex].value;
     var cfg = cfg_name == 'none' ? {} : Sanitize.Config[cfg_name.toUpperCase()];
+    // Create new Sanitize object
     var s = new Sanitize(cfg);
     var cleaned_html = s.clean_node(elm);
+    // Prepare container for sanitized HTML and append it
     var clean_container = document.getElementById('cleaned');
     while(clean_container.childNodes.length > 0) {
         clean_container.removeChild(clean_container.firstChild);
     }
     clean_container.appendChild(cleaned_html);
+    // Show source of sanitized HTML in textarea
     srcfrm.elements['source'].value = clean_container.innerHTML;
 }
 
 window.onload = function() {
     document.getElementById('editarea').onpaste = function() {
+        // The paste event is fired before the actual content is inserted
+        // Therefore we give the browser some microseconds to insert the new HTML code
         window.setTimeout(do_sanitize, 5);
-        // todo: set selection cursor
     };
     do_sanitize();
 }
@@ -76,26 +81,27 @@ window.onload = function() {
         </ul>
         <p><span class="foo">Inner text</span> Outer text. <a href="http://example.com/">A link</a></p>
     </div>
-        
+    
     <form name="srcfrm" method="post" action="#">
-    <p>
-        Sanitize config profile: 
-        <select name="sanitize_config" id="sanitize_config">
-            <option value="none">Plain text only</option>
-            <option value="Restricted">Restricted</option>
-            <option value="Basic">Basic</option>
-            <option value="Relaxed">Relaxed</option>
-        </select>
-        <input type="button" onclick="do_sanitize();" value="Sanitize">
-    </p>
-    <div class="resultcontainer">
-        <h2>HTML result</h2>
-        <div id="cleaned"></div>
-    </div>
-    <div class="resultcontainer">
-        <h2>Result source:</h2>
-        <textarea name="source" rows="30" cols="80"></textarea>
-    </div>
-</form>
+        <p>
+            Sanitize config profile: 
+            <select name="sanitize_config" id="sanitize_config">
+                <option value="none">Plain text only</option>
+                <option value="Restricted">Restricted</option>
+                <option value="Basic">Basic</option>
+                <option value="Relaxed">Relaxed</option>
+            </select>
+            <input type="button" onclick="do_sanitize();" value="Sanitize">
+        </p>
+        <!-- The result area, render sanitized HTML and its source  -->
+        <div class="resultcontainer">
+            <h2>HTML result</h2>
+            <div id="cleaned"></div>
+        </div>
+        <div class="resultcontainer">
+            <h2>Result source:</h2>
+            <textarea name="source" rows="30" cols="80"></textarea>
+        </div>
+    </form>
 </body>
 </html>
