@@ -13,6 +13,11 @@ Because it's working directly with the DOM tree, rather than a bunch of
 fragile regular expressions, Sanitize.js has no trouble dealing with malformed
 or maliciously-formed HTML, and will always output valid HTML or XHTML.
 
+Sanitize.js heavily inspired by the Ruby Sanitize library
+(http://github.com/rgrove/sanitize). It tries to port it as faithful as
+possible.
+
+
 **Author**:    Gabriel Birke (mailto:gabriel@lebenplusplus.de)  
 **Version**:   1.0   
 **Copyright**: Copyright (c) 2010 Gabriel Birke. All rights reserved.  
@@ -40,16 +45,59 @@ DOM node.
 
 ## Configuration
 
-When initializing Sanitize, you can give a configuration object as a 
-parameter:
+In addition to the ultra-safe default settings that leave just the plain text
+behind, Sanitize comes with three other built-in modes. The modes reside in
+separate JavaScript files that must loaded additionally to the sanitize.js
+file.
+
+### Sanitize.Config.RESTRICTED
+
+Allows only very simple inline formatting markup. No links, images, or block
+elements.
+
+    var s = new Sanitize(Sanitize.Config.RESTRICTED);
+    alert(s.clean_node(p)); // => '<b>foo</b>'
+
+### Sanitize.Config.BASIC
+
+Allows a variety of markup including formatting tags, links, and lists. Images
+and tables are not allowed, links are limited to FTP, HTTP, HTTPS, and mailto
+protocols, and a `rel="nofollow"` attribute is added to all links to
+mitigate SEO spam.
+
+    var s = new Sanitize(Sanitize.Config.BASIC);
+    alert(s.clean_node(p));
+    // => '<b><a href="http://foo.com/" rel="nofollow">foo</a></b>'
+
+### Sanitize.Config.RELAXED
+
+Allows an even wider variety of markup than BASIC, including images and tables.
+Links are still limited to FTP, HTTP, HTTPS, and mailto protocols, while images
+are limited to HTTP and HTTPS. In this mode, `rel="nofollow"` is not
+added to links.
+
+    var s = new Sanitize(Sanitize.Config.RELAXED);
+    alert(s.clean_node(p));
+    // => '<b><a href="http://foo.com/">foo</a></b><img src="http://foo.com/bar.jpg" />'
+
+### Configuration object parameters
+
+If the built-in modes don't meet your needs, you can easily specify a custom
+configuration:
     
-    var s = new Sanitize({ elements: ['a', 'span'],
-      attributes: {a: ['href', 'title'], span: ['class']},
-      protocols: {a: {href: ['http', 'https', 'mailto']}}
+    var s = new Sanitize({ 
+        elements:   ['a', 'span'],
+        attributes: { 
+            a: ['href', 'title'], 
+            span: ['class'] 
+        },
+        protocols:  { 
+            a: { href: ['http', 'https', 'mailto'] }
+        }
     });
     s.clean(p);
 
-### Configuration object parameters
+
 #### add_attributes (Object)
 
 Attributes to add to specific elements. If the attribute already exists, it will
@@ -200,7 +248,7 @@ way. A returned Object may contain the following items, all of which are optiona
    addition to any whitelisted attributes already defined in the current config.
 
 `node`
-:  DOM nde object that should replace the current node. All
+:  DOM node object that should replace the current node. All
    subsequent transformers and Sanitize itself will receive this new node.
 
 `whitelist`
@@ -221,7 +269,7 @@ The following lovely people have contributed to Sanitize in the form of patches
 or ideas that later became code:
 
 * Gabriel Birke <gabriel@lebenplusplus.de>
-* Ryan Grove <ryan@wonko.com> - Orinal author of the Ruby Sanitize library
+* Ryan Grove <ryan@wonko.com> - Original author of the Ruby Sanitize library
 
 ## License
 
