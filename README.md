@@ -1,7 +1,7 @@
 # Sanitize.js
 
 Sanitize.js is a whitelist-based HTML sanitizer. Given a list of acceptable
-elements and attributes, Sanitize.js will remove all unacceptable HTML from
+elements and attributes, Sanitize.js will remove all unacceptable HTML from a
 DOM node.
 
 Using a simple configuration syntax, you can tell Sanitize to allow certain
