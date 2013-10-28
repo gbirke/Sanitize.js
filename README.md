@@ -95,7 +95,7 @@ configuration:
             a: { href: ['http', 'https', 'mailto'] }
         }
     });
-    s.clean(p);
+    s.clean_node(p);
 
 
 #### add_attributes (Object)
