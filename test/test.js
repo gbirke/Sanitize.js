@@ -36,7 +36,7 @@
   
   test('Attributes can be preserved for all elements', function() {
       var s = new Sanitize({elements:['p', 'span'], attributes:{
-        '__ALL__':['class'],
+        __ALL__:['class'],
         p:['id']
       }});
       var result = cleanup(s, 'attributes');
@@ -44,7 +44,17 @@
       equal($('p[id]', result).length, 1, 'Allowed attribute arrays are merged');
       equal($('span[class]', result).length, 1, 'Class attribute of span remains');
   });
-  
+
+  test('Symbol ALL can be overriden', function() {
+      Sanitize.ALL = 'all';
+
+      var s = new Sanitize({elements:['p'], attributes:{
+        all:['class']
+      }});
+      var result = cleanup(s, 'attributes');
+      equal($('p[class]', result).length, 2, 'All class attributes of paragraphs remain');
+  });
+
   test('Comments can be preserved', function(){
       var s = new Sanitize();
       var result = cleanup(s, 'entitiesAndComments');
