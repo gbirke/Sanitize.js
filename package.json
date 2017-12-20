@@ -1,0 +1,24 @@
+{
+  "name": "sanitize",
+  "version": "1.0.0",
+  "description": "Sanitize.js is a whitelist-based HTML sanitizer",
+  "main": "lib/sanitize.js",
+  "directories": {
+    "example": "examples",
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "open test/test.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbirke/Sanitize.js.git"
+  },
+  "author": "Gabriel Birke",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gbirke/Sanitize.js/issues"
+  },
+  "homepage": "https://github.com/gbirke/Sanitize.js#readme"
+}
